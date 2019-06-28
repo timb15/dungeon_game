@@ -8,19 +8,28 @@ GRID = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
         (0, 3), (1, 3), (2, 3), (3, 3), (4, 3),
         (0, 4), (1, 4), (2, 4), (3, 4), (4, 4), ]
 
-# displays the dungeon grid with player location
+# displays the dungeon grid with player location or monster location if found
 
 
-def draw_grid(player):
-    new_grid = GRID[:]
-    for location in new_grid:
-        if player == location:
-            new_grid[new_grid.index(location)] = u" \U0001F32E "
-    print(new_grid[0:5])
-    print(new_grid[5:10])
-    print(new_grid[10:15])
-    print(new_grid[15:20])
-    print(new_grid[20:25])
+def draw_grid(player, monster=None):
+    icon = "P"
+    if monster:
+        icon = "M"
+    map = ""
+    print(" _" * 5)
+    for space in GRID:
+        x, y = space
+        if x < 4:
+            if player == space:
+                map += "|{}".format(icon)
+            else:
+                map += "|_"
+        else:
+            if player == space:
+                map += "|{}|\n".format(icon)
+            else:
+                map += "|_|\n"
+    print(map)
 
 # generates a random location for the monster, door and player
 
@@ -84,9 +93,12 @@ while True:
     if move not in moves:
         pass
     if player == door:
+        clear_screen()
         print("You found the exit! You Win!!")
         break
     if player == monster:
+        clear_screen()
+        draw_grid(player, monster)
         print("You found the monster! You Lose!!")
         break
     clear_screen()
