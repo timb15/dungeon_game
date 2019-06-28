@@ -13,10 +13,13 @@ GRID = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
 
 def draw_grid(player, monster=None):
     icon = "P"
+    # sets the icon to the 'monster' icon if the player lands on the monster
     if monster:
         icon = "M"
+
     map = ""
     print(" _" * 5)
+
     for space in GRID:
         x, y = space
         if x < 4:
@@ -73,32 +76,42 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-player, monster, door = generate_locations()
+def game_loop():
+    playing = True
+    player, monster, door = generate_locations()
 
-print("Welcome to the dungeon!")
-
-while True:
-    draw_grid(player)
-    print("You are currently in room {}".format(player))
-    print("You can move {}".format(", ".join(get_moves(player))))
-    print("Enter QUIT to quit")
-
-    moves = get_moves(player)
-    move = input(">  ").upper()
-
-    if move == 'QUIT':
-        break
-    if move in moves:
-        player = move_player(player, move)
-    if move not in moves:
-        pass
-    if player == door:
+    while playing:
         clear_screen()
-        print("You found the exit! You Win!!")
-        break
-    if player == monster:
-        clear_screen()
-        draw_grid(player, monster)
-        print("You found the monster! You Lose!!")
-        break
-    clear_screen()
+        print("Welcome to the dungeon!")
+        draw_grid(player)
+        print("You are currently in room {}".format(player))
+        print("You can move {}".format(", ".join(get_moves(player))))
+        print("Enter QUIT to quit")
+
+        moves = get_moves(player)
+        move = input(">  ").upper()
+
+        if move == 'QUIT':
+            clear_screen()
+            print("**See you next time!**")
+            break
+        if move in moves:
+            player = move_player(player, move)
+            if player == door:
+                clear_screen()
+                print("**You found the exit! You Win!!**")
+                playing = False
+            if player == monster:
+                clear_screen()
+                draw_grid(player, monster)
+                print("**You found the monster! You Lose!!**")
+                playing = False
+        else:
+            input("Invalid move... press return to try again")
+    else:
+        play_again = input("Do you want to play again? (y/n)").lower()
+        if play_again != "n":
+            game_loop()
+
+
+game_loop()
